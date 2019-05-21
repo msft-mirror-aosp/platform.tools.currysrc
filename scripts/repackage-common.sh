@@ -204,19 +204,19 @@ function checkChangeLog {
 
 if [[ -f "${DEFAULT_CONSTRUCTORS_FILE}" ]]; then
   # Check to ensure that all the requested default constructors were added.
-  checkChangeLog <(sort -u "${DEFAULT_CONSTRUCTORS_FILE}") "AddDefaultConstructor" \
+  checkChangeLog <(sort -u "${DEFAULT_CONSTRUCTORS_FILE}" | grep -v '^#') "AddDefaultConstructor" \
       "Default constructors were not added at the following locations from ${DEFAULT_CONSTRUCTORS_FILE}:"
 fi
 
 if [[ -f "${CORE_PLATFORM_API_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
-  checkChangeLog <(sort -u "${CORE_PLATFORM_API_FILE}") "@libcore.api.CorePlatformApi" \
+  checkChangeLog <(sort -u "${CORE_PLATFORM_API_FILE}" | grep -v '^#') "@libcore.api.CorePlatformApi" \
       "CorePlatformApi annotations were not added at the following locations from ${CORE_PLATFORM_API_FILE}:"
 fi
 
 if [[ -f "${INTRA_CORE_API_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
-  checkChangeLog <(sort -u "${INTRA_CORE_API_FILE}") "@libcore.api.IntraCoreApi" \
+  checkChangeLog <(sort -u "${INTRA_CORE_API_FILE}" | grep -v '^#') "@libcore.api.IntraCoreApi" \
       "IntraCoreApi annotations were not added at the following locations from ${INTRA_CORE_API_FILE}:"
 fi
 
