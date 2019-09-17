@@ -101,7 +101,7 @@ function get_uncommitted_repackaged_files() {
 }
 
 cd ${ANDROID_BUILD_TOP}
-make -j15 currysrc
+build/soong/soong_ui.bash --make-mode currysrc
 
 DEFAULT_CONSTRUCTORS_FILE=${PROJECT_DIR}/srcgen/default-constructors.txt
 CORE_PLATFORM_API_FILE=${PROJECT_DIR}/srcgen/core-platform-api.txt
