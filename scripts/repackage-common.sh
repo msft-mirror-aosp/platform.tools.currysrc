@@ -163,6 +163,9 @@ function do_transform() {
        --target-dir ${SRC_OUT_DIR} \
        --change-log ${CHANGE_LOG} \
        ${REPACKAGE_ARGS}
+
+  # Restore TEST_MAPPING files that may have been removed from the source directory
+  (cd $SRC_OUT_DIR; git checkout HEAD $(git status --short | grep -E "^ D .*/TEST_MAPPING$" | cut -c4-))
 }
 
 REPACKAGED_DIR=${PROJECT_DIR}/repackaged
