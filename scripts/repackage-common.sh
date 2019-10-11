@@ -101,7 +101,7 @@ function get_uncommitted_repackaged_files() {
 }
 
 cd ${ANDROID_BUILD_TOP}
-make -j15 currysrc
+build/soong/soong_ui.bash --make-mode currysrc
 
 DEFAULT_CONSTRUCTORS_FILE=${PROJECT_DIR}/srcgen/default-constructors.txt
 CORE_PLATFORM_API_FILE=${PROJECT_DIR}/srcgen/core-platform-api.txt
@@ -163,6 +163,9 @@ function do_transform() {
        --target-dir ${SRC_OUT_DIR} \
        --change-log ${CHANGE_LOG} \
        ${REPACKAGE_ARGS}
+
+  # Restore TEST_MAPPING files that may have been removed from the source directory
+  (cd $SRC_OUT_DIR; git checkout HEAD $(git status --short | grep -E "^ D .*/TEST_MAPPING$" | cut -c4-))
 }
 
 REPACKAGED_DIR=${PROJECT_DIR}/repackaged
