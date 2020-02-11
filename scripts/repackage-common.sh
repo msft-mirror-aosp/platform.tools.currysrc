@@ -226,7 +226,7 @@ fi
 if [[ -f "${UNSUPPORTED_APP_USAGE_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
   checkChangeLog <(grep @location "${UNSUPPORTED_APP_USAGE_FILE}" | grep -vE "[[:space:]]*//" | cut -f4 -d\" | sort -u) \
-      "@dalvik.annotation.compat.UnsupportedAppUsage" \
+      "@android.compat.annotation.UnsupportedAppUsage" \
       "UnsupportedAppUsage annotations were not added at the following locations from ${UNSUPPORTED_APP_USAGE_FILE}:"
 fi
 
