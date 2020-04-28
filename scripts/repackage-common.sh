@@ -101,7 +101,7 @@ function get_uncommitted_repackaged_files() {
 }
 
 cd ${ANDROID_BUILD_TOP}
-build/soong/soong_ui.bash --make-mode currysrc
+make -j15 currysrc
 
 DEFAULT_CONSTRUCTORS_FILE=${PROJECT_DIR}/srcgen/default-constructors.txt
 CORE_PLATFORM_API_FILE=${PROJECT_DIR}/srcgen/core-platform-api.txt
@@ -163,9 +163,6 @@ function do_transform() {
        --target-dir ${SRC_OUT_DIR} \
        --change-log ${CHANGE_LOG} \
        ${REPACKAGE_ARGS}
-
-  # Restore TEST_MAPPING files that may have been removed from the source directory
-  (cd $SRC_OUT_DIR; git checkout HEAD $(git status --short | grep -E "^ D .*/TEST_MAPPING$" | cut -c4-))
 }
 
 REPACKAGED_DIR=${PROJECT_DIR}/repackaged
@@ -207,19 +204,19 @@ function checkChangeLog {
 
 if [[ -f "${DEFAULT_CONSTRUCTORS_FILE}" ]]; then
   # Check to ensure that all the requested default constructors were added.
-  checkChangeLog <(sort -u "${DEFAULT_CONSTRUCTORS_FILE}" | grep -v '^#') "AddDefaultConstructor" \
+  checkChangeLog <(sort -u "${DEFAULT_CONSTRUCTORS_FILE}") "AddDefaultConstructor" \
       "Default constructors were not added at the following locations from ${DEFAULT_CONSTRUCTORS_FILE}:"
 fi
 
 if [[ -f "${CORE_PLATFORM_API_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
-  checkChangeLog <(sort -u "${CORE_PLATFORM_API_FILE}" | grep -v '^#') "@libcore.api.CorePlatformApi" \
+  checkChangeLog <(sort -u "${CORE_PLATFORM_API_FILE}") "@libcore.api.CorePlatformApi" \
       "CorePlatformApi annotations were not added at the following locations from ${CORE_PLATFORM_API_FILE}:"
 fi
 
 if [[ -f "${INTRA_CORE_API_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
-  checkChangeLog <(sort -u "${INTRA_CORE_API_FILE}" | grep -v '^#') "@libcore.api.IntraCoreApi" \
+  checkChangeLog <(sort -u "${INTRA_CORE_API_FILE}") "@libcore.api.IntraCoreApi" \
       "IntraCoreApi annotations were not added at the following locations from ${INTRA_CORE_API_FILE}:"
 fi
 
