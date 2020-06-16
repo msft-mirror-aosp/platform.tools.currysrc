@@ -105,6 +105,7 @@ build/soong/soong_ui.bash --make-mode currysrc
 
 DEFAULT_CONSTRUCTORS_FILE=${PROJECT_DIR}/srcgen/default-constructors.txt
 CORE_PLATFORM_API_FILE=${PROJECT_DIR}/srcgen/core-platform-api.txt
+STABLE_CORE_PLATFORM_API_FILE=${PROJECT_DIR}/srcgen/stable-core-platform-api.txt
 INTRA_CORE_API_FILE=${PROJECT_DIR}/srcgen/intra-core-api.txt
 UNSUPPORTED_APP_USAGE_FILE=${PROJECT_DIR}/srcgen/unsupported-app-usage.json
 
@@ -127,6 +128,12 @@ fi
 if [[ -f "${CORE_PLATFORM_API_FILE}" ]]; then
   echo "Adding CorePlatformApi annotations from ${CORE_PLATFORM_API_FILE}"
   REPACKAGE_ARGS="${REPACKAGE_ARGS}${SEP}--core-platform-api-file ${CORE_PLATFORM_API_FILE}"
+  SEP=" "
+fi
+
+if [[ -f "${STABLE_CORE_PLATFORM_API_FILE}" ]]; then
+  echo "Adding CorePlatformApi(status=STABLE) annotations from ${STABLE_CORE_PLATFORM_API_FILE}"
+  REPACKAGE_ARGS="${REPACKAGE_ARGS}${SEP}--stable-core-platform-api-file ${STABLE_CORE_PLATFORM_API_FILE}"
   SEP=" "
 fi
 
@@ -215,6 +222,12 @@ if [[ -f "${CORE_PLATFORM_API_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
   checkChangeLog <(sort -u "${CORE_PLATFORM_API_FILE}" | grep -v '^#') "@libcore.api.CorePlatformApi" \
       "CorePlatformApi annotations were not added at the following locations from ${CORE_PLATFORM_API_FILE}:"
+fi
+
+if [[ -f "${STABLE_CORE_PLATFORM_API_FILE}" ]]; then
+  # Check to ensure that all the requested annotations were added.
+  checkChangeLog <(sort -u "${STABLE_CORE_PLATFORM_API_FILE}" | grep -v '^#') "@libcore.api.CorePlatformApi" \
+      "CorePlatformApi annotations were not added at the following locations from ${STABLE_CORE_PLATFORM_API_FILE}:"
 fi
 
 if [[ -f "${INTRA_CORE_API_FILE}" ]]; then
