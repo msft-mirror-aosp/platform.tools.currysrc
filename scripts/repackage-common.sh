@@ -108,6 +108,7 @@ CORE_PLATFORM_API_FILE=${SRCGEN_DIR}/core-platform-api.txt
 STABLE_CORE_PLATFORM_API_FILE=${SRCGEN_DIR}/stable-core-platform-api.txt
 INTRA_CORE_API_FILE=${SRCGEN_DIR}/intra-core-api.txt
 UNSUPPORTED_APP_USAGE_FILE=${SRCGEN_DIR}/unsupported-app-usage.json
+FLAGGED_API_FILE=${SRCGEN_DIR}/flagged-api.json
 
 TAB_SIZE=${TAB_SIZE-4}
 
@@ -150,6 +151,12 @@ if [[ -f "${UNSUPPORTED_APP_USAGE_FILE}" ]]; then
   if [[ -n "${UNSUPPORTED_APP_USAGE_CLASS}" ]]; then
     REPACKAGE_ARGS="${REPACKAGE_ARGS}${SEP}--unsupported-app-usage-class ${UNSUPPORTED_APP_USAGE_CLASS}"
   fi
+fi
+
+if [[ -f "${FLAGGED_API_FILE}" ]]; then
+  echo "Adding FlaggedApi annotations from ${FLAGGED_API_FILE}"
+  REPACKAGE_ARGS="${REPACKAGE_ARGS}${SEP}--flagged-api-file ${FLAGGED_API_FILE}"
+  SEP=" "
 fi
 
 if [[ -n "${TAB_SIZE}" ]]; then
@@ -215,6 +222,10 @@ function checkChangeLog {
   fi
 }
 
+function extractLocationsFromJson {
+    grep @location "$1" | grep -vE "[[:space:]]*//" | cut -f4 -d\" | sort -u
+}
+
 if [[ -f "${DEFAULT_CONSTRUCTORS_FILE}" ]]; then
   # Check to ensure that all the requested default constructors were added.
   checkChangeLog <(sort -u "${DEFAULT_CONSTRUCTORS_FILE}" | grep -v '^#') "AddDefaultConstructor" \
@@ -241,9 +252,16 @@ fi
 
 if [[ -f "${UNSUPPORTED_APP_USAGE_FILE}" ]]; then
   # Check to ensure that all the requested annotations were added.
-  checkChangeLog <(grep @location "${UNSUPPORTED_APP_USAGE_FILE}" | grep -vE "[[:space:]]*//" | cut -f4 -d\" | sort -u) \
+  checkChangeLog <(extractLocationsFromJson "${UNSUPPORTED_APP_USAGE_FILE}") \
       "@android.compat.annotation.UnsupportedAppUsage" \
       "UnsupportedAppUsage annotations were not added at the following locations from ${UNSUPPORTED_APP_USAGE_FILE}:"
+fi
+
+if [[ -f "${FLAGGED_API_FILE}" ]]; then
+  # Check to ensure that all the requested annotations were added.
+  checkChangeLog <(extractLocationsFromJson "${FLAGGED_API_FILE}") \
+      "@android.annotation.FlaggedApi" \
+      "FlaggedApi annotations were not added at the following locations from ${FLAGGED_API_FILE}:"
 fi
 
 if [[ $ERROR = 1 ]]; then
